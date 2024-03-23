@@ -35,7 +35,7 @@ This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 
 ## Warning about Bias and Fairness in CLIP Output
 
-CLIP 'opinions' may cause biased rants (especially when non-English text is in the image), slurs, and profanity. Use responsibly / at your own discretion.
+CLIP 'opinions' may contain biased rants (especially when non-English text is in the image), slurs, and profanity. Use responsibly / at your own discretion.
 For more information, refer to the [CLIP Model Card](https://github.com/openai/CLIP/blob/main/model-card.md).
 
 ## Known Issues
