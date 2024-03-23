@@ -7,7 +7,7 @@ This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 - Upload an image, get a CLIP 'opinion' (text) about the image
 - --> Gradient Ascent -> optimize text embeddings for cosine similarity with image embedding -> tokenizer -> CLIP 'opinion' words
 - Guess where CLIP was 'looking' for a given predicted word by setting a ROI (optional) & see what CLIP was 'looking' at
-- --> "GradCAM" - like heatmap of salient features
+- --> "GradCAM" - like heatmap of salient features / attention visualization
 
 ## Installation & Running
 
@@ -16,7 +16,7 @@ This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 - From the console, use "python run_clipapp.py" -> GUI
 
 - Default CLIP ViT-B/32 takes ~15 seconds to generate an 'opinion' (RTX 4090), 4 GB VRAM.
-- Gigantic models >> 24 GB VRAM can use NVIDIA Driver CUDA System Fallback Policy to run, but largest models ~ 30 Minutes for 1 opinion (not recommended)
+- Gigantic models >> 24 GB VRAM can use NVIDIA Driver CUDA SysMem Fallback Policy to run, but largest models ~ 30 Minutes for 1 opinion (not recommended)
 - You can get a smaller model's "opinion" and force that on a bigger model (should work for all >=6 GB VRAM), or add your own words to visualize.
 - Check the console to see what CLIP is "MatMulling" about while you wait to get a CLIP opinion.
 - Click the image to place a ROI and "guess where CLIP was looking" (gamification, optional).
