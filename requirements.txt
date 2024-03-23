@@ -1,0 +1,17 @@
+Pillow
+PySide2
+ftfy
+einops
+numpy
+regex
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+torchvision
+tqdm
+git+https://github.com/openai/CLIP.git
+scipy
+matplotlib
+kornia
+colorama
+imageio
+opencv-python
+captum
