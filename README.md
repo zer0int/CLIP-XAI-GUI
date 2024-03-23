@@ -5,8 +5,9 @@
 
 This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 - Upload an image, get a CLIP 'opinion' (text) about the image
---> Gradient Ascent -> optimize text embeddings for cosine similarity with image embedding -> tokenizer -> CLIP 'opinion' words
-- Guess where CLIP was 'looking' for a given predicted word by setting a ROI (optional) & see what CLIP was 'looking' at --> "GradCAM" - like heatmap of salient features
+- --> Gradient Ascent -> optimize text embeddings for cosine similarity with image embedding -> tokenizer -> CLIP 'opinion' words
+- Guess where CLIP was 'looking' for a given predicted word by setting a ROI (optional) & see what CLIP was 'looking' at
+- --> "GradCAM" - like heatmap of salient features
 
 ## Installation & Running
 
