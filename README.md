@@ -1,4 +1,5 @@
-![CLIP GUI - XAI app Banner](banner_image.png)
+
+![CLIP-gui-banner](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/ada8996d-58ea-412d-be94-7b0e64584f1a)
 
 # CLIP GUI - XAI app ~ explainable (and guessable) ViT & ResNet
 
@@ -44,7 +45,7 @@ For more information, refer to the [CLIP Model Card](https://github.com/openai/C
 
 ## Examples
 
+![example_cmd_git](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/42935df4-5298-4193-ad78-0a103e77fb0e)
 
-![Image 1](example-images/image1.jpg) ![Image 2](example-images/image2.jpg)
 
-![Image 3](example-images/image3.jpg) ![Image 4](example-images/image4.jpg)
+![example_git](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/073b4cbd-057f-48c6-956a-74281c214581)
