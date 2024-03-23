@@ -28,7 +28,6 @@ This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 ## Credits / Built On
 
 - [OpenAI / CLIP](https://github.com/openai/CLIP)
-- 
 - ViT heatmaps built on: [Transformer-MM-Explainability](https://github.com/hila-chefer/Transformer-MM-Explainability)
 - ResNet heatmaps built on: [GradCAM Visualization](https://github.com/kevinzakka/clip_playground)
 - Original CLIP Gradient Ascent Script: Used with permission by Twitter / X: [@advadnoun](https://twitter.com/advadnoun)
