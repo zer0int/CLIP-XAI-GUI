@@ -43,7 +43,6 @@ For more information, refer to the [CLIP Model Card](https://github.com/openai/C
 
 ## Examples
 
-![example_cmd_git](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/42935df4-5298-4193-ad78-0a103e77fb0e)
+![Screenshot 2024-03-23 163731](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/17f4bc5f-51e3-4c87-96b5-682a5fcaa794)
 
-
-![example_git](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/073b4cbd-057f-48c6-956a-74281c214581)
+![example_git](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/170b20e2-9ce1-4b12-bb86-706af89db156)
