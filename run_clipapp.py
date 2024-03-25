@@ -45,6 +45,8 @@ class ClipGui(QMainWindow):
         self.saved_token_path = None
         self.saved_image_path = None
         self.tokens_file_last_modified = 0 
+        self.last_mod_time = 0
+        self.current_mod_time = 0
         self.model_choice = 'ViT-B/32'
         self.roi_box = QRect(0, 0, 20, 20)  # Initial position for the ROI box
         self.initUI()
@@ -70,7 +72,7 @@ class ClipGui(QMainWindow):
         self.updateStatusIndicator("RDY")  # Set initial status
 
         # Feedback labels initialization
-        self.feedback_model = QLabel("[3] CLIP opinion (select a word) (click twice):")
+        self.feedback_model = QLabel("[3] CLIP opinion (select a word):")
         self.feedback_model.setAlignment(Qt.AlignCenter)
         self.feedback_model.setMinimumSize(60, 30)
         self.feedback_empty = QLabel("")
@@ -97,13 +99,8 @@ class ClipGui(QMainWindow):
         self.upload_button = QPushButton("[1] Upload Image")
         self.upload_button.clicked.connect(self.uploadImage)
         layout.addWidget(self.upload_button)
-        
-        # Add this in initUI
-        #self.clip_opinion_button = QPushButton("[2] Get a CLIP opinion!")
-        #self.clip_opinion_button.clicked.connect(self.getClipOpinion)
-        #self.clip_opinion_button.setEnabled(True)
-        #layout.addWidget(self.clip_opinion_button)
-        
+      
+     
         self.clip_opinion_button = QPushButton("[2] Get a CLIP opinion!")
         self.clip_opinion_button.clicked.connect(self.getClipOpinion)
         self.clip_opinion_button.setEnabled(True)
@@ -199,7 +196,7 @@ class ClipGui(QMainWindow):
         # Add the images layout to the main vertical layout
         layout.addLayout(images_layout)
 
-        self.confirm_button = QPushButton("[5] Confirm ROI Selection")
+        self.confirm_button = QPushButton("[5] Confirm ROI / Get Heatmap")
         self.confirm_button.clicked.connect(self.onConfirmButtonClicked)
         layout.addWidget(self.confirm_button)
        
@@ -229,11 +226,17 @@ class ClipGui(QMainWindow):
 
         # Check if the file exists and has been modified
         if os.path.exists(full_path):
-            current_mod_time = os.path.getmtime(full_path)
+            current_mod_time = 0 #os.path.getmtime(full_path)
             if current_mod_time != self.last_mod_time:
                 print("Tokens file has been updated. Refreshing list...")
-                self.loadClipOutput(full_path)  # Your method to load file contents into the list widget
+                selected_texts = [item.text() for item in self.words_list_widget.selectedItems()]
+                self.loadClipOutput(full_path)  # Reload contents into the list widget
                 self.last_mod_time = current_mod_time
+                # Re-select items based on stored text, if they still exist
+                for index in range(self.words_list_widget.count()):
+                    item = self.words_list_widget.item(index)
+                    if item.text() in selected_texts:
+                        item.setSelected(True)
 
     
     def updateModelChoice(self, index):
@@ -266,9 +269,10 @@ class ClipGui(QMainWindow):
             self.image_label.setPixmap(self.cropped_pixmap.scaled(224, 224, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.saved_image_path = 'clipapp/tmp/saved_image.jpg'
             self.cropped_pixmap.save(self.saved_image_path)
+            self.updateConfirmButtonState()
         else:
-            self.clip_opinion_button.setText("Please upload an image first!")
-            QTimer.singleShot(3000, lambda: self.clip_opinion_button.setText("[2] Get a CLIP opinion!"))
+            self.updateConfirmButtonState()
+            #QTimer.singleShot(3000, lambda: self.clip_opinion_button.setText("[2] Get a CLIP opinion!"))
 
     @Slot()
     def uploadImage(self):
@@ -297,6 +301,7 @@ class ClipGui(QMainWindow):
             # Save the image to a specific location for the script to access
             self.saved_image_path = 'clipapp/tmp/saved_image.jpg'
             pixmap.save(self.saved_image_path)
+            self.updateConfirmButtonState()
 
 
     def updateImageDisplay(self):
@@ -322,48 +327,55 @@ class ClipGui(QMainWindow):
             painter.end()
             self.image_label.setPixmap(temp_pixmap.scaled(224, 224, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-
-
     def onRoiUpdated(self, new_roi):
         self.roi_box = new_roi  # Update the main class' ROI box with the new one
         self.updateImageDisplay() 
         
     def confirmROI(self):
-        if self.selected_word:
-            self.confirm_button.setEnabled(False)
-            self.confirm_button.setText("[5] Confirm ROI Selection")  # Reset the button text to default
-        else:
-            self.confirm_button.setText("Get a CLIP opinion + select a WORD first!")
-            QTimer.singleShot(3000, lambda: self.confirm_button.setText("[5] Confirm ROI Selection"))
+        self.updateConfirmButtonState()
+            #QTimer.singleShot(3000, lambda: self.confirm_button.setText("[5] Confirm ROI Selection"))
 
-    def loadClipOutput(self):
-        clip_output_path = 'token_test.txt'  # Replace with the actual file path
-        try:
-            with open(clip_output_path, 'r') as file:
-                clip_output = file.read().strip().split()
-                for word in clip_output:
-                    item = QListWidgetItem(word)
-                    self.words_list_widget.addItem(item)
-        except FileNotFoundError:
-            self.text_output_edit.setPlainText("Could not load CLIP output, file not found.")
-            
+           
     def setupListWidget(self):
         self.words_list_widget.itemSelectionChanged.connect(self.updateConfirmButtonState)
+        
+    def saveSelectedWord(self, word):
+        self.saved_token_path = 'clipapp/tmp/saved_token.txt'
+        with open(self.saved_token_path, 'w') as token_file:
+            token_file.write(word)
+            # If needed, find and select the item in the list here, by iterating through the list and matching the text.
+        
+    def restoreSelectionState(self):
+        if self.selected_word:
+            for index in range(self.words_list_widget.count()):
+                item = self.words_list_widget.item(index)
+                if item.text() == self.selected_word:
+                    item.setSelected(True)
+                return
 
     def updateConfirmButtonState(self):
-        has_selection = bool(self.words_list_widget.selectedItems())
-        self.confirm_button.setEnabled(has_selection)
-        if not has_selection:
+        if not self.image_path:
+            # No image uploaded
+            self.confirm_button.setText("Please upload an image first!")
+        elif not self.selected_word:
+            # No word selected
+            self.confirm_button.setText("Get a CLIP opinion + select a WORD first!")
+        elif not self.loadClipOutput:
+            # No word selected
             self.confirm_button.setText("Get a CLIP opinion + select a WORD first!")
         else:
-            self.confirm_button.setText("[5] Confirm ROI Selection")
+            # Ready to confirm selection
+            self.confirm_button.setText("[5] Confirm ROI / Get Heatmap")
+        # Determine whether the button should be enabled
+        self.confirm_button.setEnabled(bool(self.image_path and self.loadClipOutput and self.selected_word))
+
             
     def loadTokensToListWidget(self):
         """Loads tokens from the file to the list widget and updates the last modified timestamp."""
         tokens_file_path = self.getTokensFilePath()
         # Check if the file exists and get its last modified timestamp
         if os.path.exists(tokens_file_path):
-            last_modified = os.path.getmtime(tokens_file_path)
+            last_modified = 0 #os.path.getmtime(tokens_file_path)
             if last_modified != self.tokens_file_last_modified:
                 print("Tokens file has been updated. Refreshing list...")
                 self.tokens_file_last_modified = last_modified
@@ -371,6 +383,7 @@ class ClipGui(QMainWindow):
                 with open(tokens_file_path, 'r', encoding='utf-8') as file:
                     for word in file.read().strip().split():
                         self.words_list_widget.addItem(word)
+                        self.updateConfirmButtonState()
 
     def getTokensFilePath(self):
         """Constructs and returns the tokens file path based on the current image name."""
@@ -381,26 +394,20 @@ class ClipGui(QMainWindow):
 
     @Slot(QListWidgetItem)
     def wordSelected(self, item):
-        if self.selected_word == item.text():
-            self.loadTokensToListWidget()
-            self.refreshWordListIfNeeded()
-            item.setSelected(False)
+        selected_text = item.text()  # Capture text at method start
+        self.loadTokensToListWidget()  # Potentially modifies list
+        self.refreshWordListIfNeeded()  # Potentially modifies list
+
+        # Adjust selection logic
+        if self.selected_word == selected_text:
             self.selected_word = None
-            self.updateConfirmButtonState() 
         else:
-            self.loadTokensToListWidget()
-            self.refreshWordListIfNeeded()
-            self.selected_word = item.text()
-            self.selected_word = item.text()
-            for index in range(self.words_list_widget.count()):
-                self.words_list_widget.item(index).setSelected(False)
-            item.setSelected(True)
-            # Save the selected word to a text file
-            self.saved_token_path = 'clipapp/tmp/saved_token.txt'
-            with open(self.saved_token_path, 'w') as token_file:
-                token_file.write(self.selected_word)
-            self.updateConfirmButtonState()
-            self.selected_word = item.text()
+            self.selected_word = selected_text
+            self.saveSelectedWord(selected_text)
+    
+        self.restoreSelectionState()  # Restore selection based on self.selected_word
+        self.updateConfirmButtonState()
+
                 
     def compareROIWithBinaryMask(self, binary_mask_image_path):
         binary_mask_pixmap = QPixmap(binary_mask_image_path)
@@ -425,16 +432,21 @@ class ClipGui(QMainWindow):
     
     
     def openTokensFile(self):
-        #print("Current working directory:", os.getcwd())
         img_name_without_ext = os.path.splitext(os.path.basename(self.image_path))[0] if self.image_path else ""
         tokens_file_path = f'clipapp/tokens_{img_name_without_ext}.txt'
-        #print("Trying to open:", tokens_file_path)
-
         full_path = os.path.abspath(tokens_file_path)
         print("Full path to CLIP opinion:", full_path)
 
         if os.path.exists(full_path):
-            # OS-specific handling to open the file
+            # Update the file's timestamp by reloading and saving its content
+            with open(full_path, 'r+', encoding='utf-8') as file:
+                content = file.read()
+                file.seek(0)
+                file.write(content)
+                file.truncate()
+            self.last_mod_time = os.path.getmtime(full_path)  # Update the last_mod_time after the operation
+
+            # Open the file for the user
             if os.name == 'nt':  # Windows
                 os.startfile(full_path)
             elif os.name == 'posix':  # macOS, Linux
@@ -449,6 +461,7 @@ class ClipGui(QMainWindow):
             print(f"File not found: {full_path}")
 
 
+
     
     def getClipOpinion(self):
         if self.image_path:
@@ -461,9 +474,9 @@ class ClipGui(QMainWindow):
             img_name = os.path.basename(self.image_path)
             img_name_without_ext = os.path.splitext(img_name)[0]
             tokens_file_path = f'clipapp/tokens_{img_name_without_ext}.txt'
-      
+  
             self.clip_opinion_button.setText("[2] Get a CLIP opinion!")  # Reset the button text to default
-    
+
             script_command = ['python', 'clipgaex.py', self.image_path, self.model_choice]  # Ensure this is correct
             self.saved_token_path = tokens_file_path
             try:
@@ -475,14 +488,25 @@ class ClipGui(QMainWindow):
                 QApplication.processEvents()
                 self.open_tokens_button.setEnabled(True)
                 self.open_tokens_button.setStyleSheet("background-color: lightblue;")
-                self.last_mod_time = os.path.getmtime(tokens_file_path)                
+                #self.last_mod_time = os.path.getmtime(tokens_file_path) 
+                #self.last_mod_time = 0
+                #self.current_mod_time = 0
+
+                # Force-select the first item in the list, if present
+                if self.words_list_widget.count() > 0:
+                    self.words_list_widget.setCurrentRow(0)  # This automatically selects the first item
+                    self.selected_word = self.words_list_widget.item(0).text()  # Update selected_word
+                    self.saveSelectedWord(self.selected_word)  # Save the selected word
+                    self.updateConfirmButtonState()  # Update the state of the confirm button
+                    #self.last_mod_time = 0
+                    #self.current_mod_time = 0
+               
             except subprocess.CalledProcessError as e:
                 print(f"An error occurred while running CLIP gradient ascent: {e}")
                 self.updateStatusIndicator("FAIL")  # Update status to 'FAIL' on error
-                QApplication.processEvents() 
+                QApplication.processEvents()
         else:
-            self.clip_opinion_button.setText("Please upload an image first!")
-            QTimer.singleShot(3000, lambda: self.clip_opinion_button.setText("[2] Get a CLIP opinion!"))
+            self.updateConfirmButtonState()
 
     def loadClipOutput(self, clip_output_path=''):
         self.words_list_widget.clear()  # Clear existing items
@@ -531,14 +555,8 @@ class ClipGui(QMainWindow):
                 self.updateStatusIndicator("FAIL")  # Set status to 'FAIL' on error
                 QApplication.processEvents() 
                 
-        elif not self.saved_image_path or not self.saved_token_path:
-            print("\nPlease get a CLIP opinion before confirming selection.")
-            self.confirm_button.setText("Please get a CLIP opinion first!")
-            QTimer.singleShot(3000, lambda: self.confirm_button.setText("[5] Confirm ROI Selection"))
-        else:
-            print("\nPlease select a word before confirming selection.")
-            self.confirm_button.setText("Please select a word before confirming.")
-            QTimer.singleShot(3000, lambda: self.confirm_button.setText("[5] Confirm ROI Selection"))
+            else: 
+                self.updateConfirmButtonState() 
             
             
     def runCliprnexScript(self):
@@ -576,10 +594,8 @@ class ClipGui(QMainWindow):
                 self.updateStatusIndicator("FAIL")  # Set status to 'FAIL' on error
                 QApplication.processEvents() 
                 
-        elif not self.saved_image_path or not self.saved_token_path:
-            print("\nPlease get a CLIP opinion before confirming selection.")
         else:
-            print("\nPlease select a word before confirming selection.")
+            self.updateConfirmButtonState()
             
     def updateHeatmapDisplay(self, heatmap_image_path):
         # Check if the heatmap image file exists before attempting to load it
