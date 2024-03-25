@@ -1,7 +1,7 @@
 
 ![CLIP-gui-banner](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/ada8996d-58ea-412d-be94-7b0e64584f1a)
 
-# CLIP GUI - XAI app ~ explainable (and guessable) ViT & ResNet
+## CLIP GUI - XAI app ~ explainable (and guessable) ViT & ResNet
 
 This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
 - Upload an image, get a CLIP 'opinion' (text) about the image
