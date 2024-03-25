@@ -1,5 +1,5 @@
 
-![CLIP-gui-banner](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/ada8996d-58ea-412d-be94-7b0e64584f1a)
+![CLIP-gui-banner2](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/208fce6e-221b-4ff3-b7ee-3795a97b4fb6)
 
 ## CLIP GUI - XAI app ~ explainable (and guessable) ViT & ResNet
 
