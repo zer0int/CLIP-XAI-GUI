@@ -40,8 +40,6 @@ For more information, refer to the [CLIP Model Card](https://github.com/openai/C
 
 ## Known Issues
 - No threading, scripts that invoke models run on main thread (check console to verify thread is not *actually* hanging)
-- Some models, such as RN101, not working properly with regard to salient feature heatmaps
-- You can edit CLIP's "opinion" and add your own words to the file, but it comes at the expense of some error, alas you need to click twice to select a word to visualize.
 
 ## Examples
 
