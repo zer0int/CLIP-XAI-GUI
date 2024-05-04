@@ -1,6 +1,16 @@
 
 ![CLIP-gui-banner2](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/208fce6e-221b-4ff3-b7ee-3795a97b4fb6)
 
+### Change 4/May/2024:
+
+- Added AMP (Automatic Mixed Precision); uses torch.cuda.amp / autocast + GradScaler
+- ViT models are now much smaller - ViT-L/14 fits into 24 GB VRAM!
+- Just do "python run_clipapp-amp.py" to launch the GUI / use AMP for a CLIP 'opinion'.
+
+![before-after](https://github.com/zer0int/CLIP-XAI-GUI/assets/132047210/11b6b703-3f64-42df-9177-31143834d6c2)
+
+-----
+
 ## CLIP GUI - XAI app ~ explainable (and guessable) ViT & ResNet
 
 This is a GUI for OpenAI's CLIP ViT and ResNet models, where you can:
