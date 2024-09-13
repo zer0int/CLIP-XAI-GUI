@@ -477,7 +477,7 @@ class ClipGui(QMainWindow):
   
             self.clip_opinion_button.setText("[2] Get a CLIP opinion!")  # Reset the button text to default
 
-            script_command = ['python', 'clipgaex.py', self.image_path, self.model_choice]  # Ensure this is correct
+            script_command = [sys.executable, 'clipgaex.py', self.image_path, self.model_choice]  # Ensure this is correct
             self.saved_token_path = tokens_file_path
             try:
                 # Attempt to run the subprocess
@@ -488,9 +488,6 @@ class ClipGui(QMainWindow):
                 QApplication.processEvents()
                 self.open_tokens_button.setEnabled(True)
                 self.open_tokens_button.setStyleSheet("background-color: lightblue;")
-                #self.last_mod_time = os.path.getmtime(tokens_file_path) 
-                #self.last_mod_time = 0
-                #self.current_mod_time = 0
 
                 # Force-select the first item in the list, if present
                 if self.words_list_widget.count() > 0:
@@ -498,8 +495,6 @@ class ClipGui(QMainWindow):
                     self.selected_word = self.words_list_widget.item(0).text()  # Update selected_word
                     self.saveSelectedWord(self.selected_word)  # Save the selected word
                     self.updateConfirmButtonState()  # Update the state of the confirm button
-                    #self.last_mod_time = 0
-                    #self.current_mod_time = 0
                
             except subprocess.CalledProcessError as e:
                 print(f"An error occurred while running CLIP gradient ascent: {e}")
@@ -526,7 +521,7 @@ class ClipGui(QMainWindow):
             self.updateStatusIndicator("RUN")  # Set status to 'RUN' at the start
             QApplication.processEvents() 
             script_command = [
-                'python', 'clipex.py',
+                sys.executable, 'clipex.py',
                 self.saved_image_path, 
                 self.saved_token_path,
                 self.model_choice
@@ -565,7 +560,7 @@ class ClipGui(QMainWindow):
             self.updateStatusIndicator("RUN")  # Set status to 'RUN' at the start
             QApplication.processEvents() 
             script_command = [
-                'python', 'cliprnex.py',
+                sys.executable, 'cliprnex.py',
                 self.saved_image_path, 
                 self.saved_token_path,
                 self.model_choice
